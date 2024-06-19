@@ -109,7 +109,7 @@ const News=(props)=>{
                     desc={element.description ? element.description : ""}
                     imgUrl={element.image}
                     newsUrl={element.url}
-                    author={element.author}
+                    // author={element.author}
                     date={element.publishedAt}
                     source={element.source.name}
                   />
