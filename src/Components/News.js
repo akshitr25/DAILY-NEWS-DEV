@@ -18,10 +18,10 @@ const News=(props)=>{
     setLoading(true);
     let url;
     if(props.query==='wwe')   
-      url=`https://gnews.io/api/v4/search?&page=${page}&apikey=${props.apiKey}&pageSize=${props.pageSize}&q=${props.query}&sortBy=publishedAt`;
+      url=`https://gnews.io/api/v4/search?&page=${page}&apikey=${props.apiKey}&pageSize=${props.pageSize}&q=${props.query}&sortBy=publishedAt&lang=en`;
     ///https://gnews.io/api/v4/search?q=wwe&apikey=1d2a950ce9de79cec9e981baadbb9b69
     else
-      url=`https://gnews.io/api/v4/search?&page=${page}&apikey=${props.apiKey}&pageSize=${props.pageSize}&q=${props.query}&country=${props.country}`;
+      url=`https://gnews.io/api/v4/search?&page=${page}&apikey=${props.apiKey}&pageSize=${props.pageSize}&q=${props.query}&country=${props.country}&lang=en`;
     let data=await fetch(url);
     props.setProgress(50);
     let parsedData=await data.json();
@@ -57,9 +57,9 @@ const News=(props)=>{
     props.setProgress(0);
     let url;
     if(props.query==='wwe')
-      url=`https://gnews.io/api/v4/search?&page=${page}&apikey=${props.apiKey}&pageSize=${props.pageSize}&q=${props.query}&sortBy=publishedAt`;
+      url=`https://gnews.io/api/v4/search?&page=${page}&apikey=${props.apiKey}&pageSize=${props.pageSize}&q=${props.query}&sortBy=publishedAt&lang=en`;
     else
-      url=`https://gnews.io/api/v4/search?&page=${page}&apikey=${props.apiKey}&pageSize=${props.pageSize}&q=${props.query}&country=${props.country}`;
+      url=`https://gnews.io/api/v4/search?&page=${page}&apikey=${props.apiKey}&pageSize=${props.pageSize}&q=${props.query}&country=${props.country}&lang=en`;
     setPage(page+1);
     setLoading(true);
     console.log(page);
