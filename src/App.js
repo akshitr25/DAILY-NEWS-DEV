@@ -21,7 +21,7 @@ const App=()=>{
           <Routes>
           <Route
               exact
-              path="/wwe"
+              path="/DAILY-NEWS-DEV/WWE"
               element={<News setProgress={setProgress}
                 query="wwe"
                 pageSize={10}/>}
@@ -35,7 +35,7 @@ const App=()=>{
             />
             <Route 
               exact
-              path="/business/*"
+              path="/DAILY-NEWS-DEV/business/*"
               element={<News setProgress={setProgress}
               key="business"
               country="in" query="business" 
@@ -43,7 +43,7 @@ const App=()=>{
               />
               <Route 
               exact
-              path="/health/*"
+              path="/DAILY-NEWS-DEV/health/*"
               element={<News setProgress={setProgress}
               key="health"
               country="in" query="health" 
@@ -51,7 +51,7 @@ const App=()=>{
               />
               <Route 
               exact
-              path="/science/*"
+              path="/DAILY-NEWS-DEV/science/*"
               element={<News setProgress={setProgress} 
               key="science"
               country="in" query="science" 
@@ -59,7 +59,7 @@ const App=()=>{
               />
               <Route 
               exact
-              path="/sports/*"
+              path="/DAILY-NEWS-DEV/sports/*"
               element={<News setProgress={setProgress} 
               key="sports"
               country="in" query="sports" 
@@ -67,7 +67,7 @@ const App=()=>{
               />
               <Route 
               exact
-              path="/technology/*"
+              path="/DAILY-NEWS-DEV/technology/*"
               element={<News setProgress={setProgress}
               key="technology"
               country="in" query="technology" 

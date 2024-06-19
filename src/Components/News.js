@@ -76,7 +76,7 @@ const News=(props)=>{
   
     return (
       <div className="container my-4 bg-secondary">
-        <h1 className="text-center text-white" style={{margin: "25px 0px", marginTop: "55px"}}>Daily News - Top {capitalizeFirstLetter(props.category)} Headlines</h1>
+        <h1 className="text-center text-white" style={{margin: "25px 0px", marginTop: "55px"}}>Daily News - Top {capitalizeFirstLetter(props.query)} Headlines</h1>
         {loading && <Spinner></Spinner>}
         {!loading &&
         <>
