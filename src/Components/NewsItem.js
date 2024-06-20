@@ -8,7 +8,7 @@ const NewsItem=(props)=>{
         <a href={newsUrl?newsUrl:"https://t3.ftcdn.net/jpg/03/27/55/60/360_F_327556002_99c7QmZmwocLwF7ywQ68ChZaBry1DbtD.jpg"} target="_blank" rel="noreferrer">
           <img src={imgUrl?imgUrl:"https://t3.ftcdn.net/jpg/03/27/55/60/360_F_327556002_99c7QmZmwocLwF7ywQ68ChZaBry1DbtD.jpg"} className="card-img-top" alt={title}/>
           </a>
-          <span class="position-absolute top-0 translate-middle badge rounded-pill bg-warning text-dark" style={{right: '0%', zIndex: "1"}}> 
+          <span className="position-absolute top-0 translate-middle badge rounded-pill bg-warning text-dark" style={{right: '0%', zIndex: "1"}}> 
     {source}
   </span>
   <div className="card-body">
@@ -17,7 +17,7 @@ const NewsItem=(props)=>{
   </h5>
     <p className="card-text">{desc}</p>
     <a href={newsUrl?newsUrl:"https://t3.ftcdn.net/jpg/03/27/55/60/360_F_327556002_99c7QmZmwocLwF7ywQ68ChZaBry1DbtD.jpg"} target="_blank" className="btn btn-primary" rel="noreferrer">Read More...</a>
-    <p class="card-text"><small class="">{new Date(date).toGMTString()}</small></p>
+    <p className="card-text"><small className="">{new Date(date).toGMTString()}</small></p>
     {/* By {author!=null?author:"Unknown"} on  */}
   </div>
 </div>
