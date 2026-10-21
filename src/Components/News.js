@@ -73,21 +73,26 @@ const News = (props) => {
   const retry = () => loadNews(articles.length > 0 ? page + 1 : 1, articles.length > 0);
 
   return (
-    <div className="container my-4 bg-secondary">
-      <h1 className="text-center text-white" style={{ margin: "25px 0px", marginTop: "55px" }}>
-        Daily News - Top {capitalizeFirstLetter(props.query)} Headlines
-      </h1>
+    <main className="news-page">
+      <section className="news-intro">
+        <p className="section-kicker"><span /> YOUR DAILY BRIEFING</p>
+        <h1>{capitalizeFirstLetter(query)}<span>—</span> in focus</h1>
+        <p className="news-subtitle">The stories shaping today, selected for you.</p>
+        <div className="intro-rule"><span /></div>
+      </section>
       {error && (
-        <div className="alert alert-danger" role="alert">
-          Unable to load news: {error}{' '}
-          <button className="btn btn-outline-danger btn-sm" onClick={retry} type="button">
-            Retry
-          </button>
+        <div className="news-error" role="alert">
+          <span className="error-symbol" aria-hidden="true">!</span>
+          <div>
+            <strong>We couldn’t fetch the latest stories.</strong>
+            <p>{error}</p>
+          </div>
+          <button className="retry-button" onClick={retry} type="button">Try again <span aria-hidden="true">↗</span></button>
         </div>
       )}
       {loading && articles.length === 0 && <Spinner />}
       {!loading && !error && articles.length === 0 && (
-        <p className="text-center text-white">No news articles were found.</p>
+        <p className="empty-state">No stories found in this section just yet.</p>
       )}
       {articles.length > 0 && (
         <InfiniteScroll
@@ -97,31 +102,26 @@ const News = (props) => {
           loader={loading ? <Spinner /> : null}
           endMessage={
             !error && (
-              <p style={{ textAlign: 'center' }}>
-                <b>You have seen all the articles. Stay tuned to Daily News for the latest updates.</b>
-              </p>
+              <p className="end-message">You’re all caught up. Check back soon for more.</p>
             )
           }
         >
-          <div className="container">
-            <div className="row">
+          <div className="story-grid">
               {articles.map((element) => (
-                <div className="col-md-3 mx-4 my-4" key={element.url}>
-                  <NewsItem
-                    title={element.title || ""}
-                    desc={element.description || ""}
-                    imgUrl={element.image}
-                    newsUrl={element.url}
-                    date={element.publishedAt}
-                    source={element.source?.name || 'Unknown source'}
-                  />
-                </div>
+                <NewsItem
+                  key={element.url}
+                  title={element.title || ""}
+                  desc={element.description || ""}
+                  imgUrl={element.image}
+                  newsUrl={element.url}
+                  date={element.publishedAt}
+                  source={element.source?.name || 'Unknown source'}
+                />
               ))}
-            </div>
           </div>
         </InfiniteScroll>
       )}
-    </div>
+    </main>
   );
 };
 

@@ -6,7 +6,7 @@ import LoadingBar from 'react-top-loading-bar';
 const App=()=>{
   const [progress,setProgress]=React.useState(0);
   return(
-      <div className='bg-secondary'>
+      <div className='app-shell'>
         <BrowserRouter>
         <Navbar/>
         <LoadingBar

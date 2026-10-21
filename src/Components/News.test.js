@@ -47,6 +47,6 @@ describe('News', () => {
     render(<News query="technology" setProgress={setProgress} />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Invalid API key');
-    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Try again/ })).toBeInTheDocument();
   });
 });

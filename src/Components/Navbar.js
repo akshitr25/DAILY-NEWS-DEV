@@ -1,43 +1,43 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
-const Navbar=()=>{ //function based component
-    return (
-      <div>
-        <nav className="navbar fixed-top navbar-expand-lg navbar-light bg-info">
-  <Link className="navbar-brand text-warning fw-bold" to="/DAILY-NEWS-DEV/WWE">WWE</Link>
-  <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span className="navbar-toggler-icon"></span>
-  </button>
+const sections = [
+  { label: 'Home', to: '/DAILY-NEWS-DEV/', end: true },
+  { label: 'Business', to: '/DAILY-NEWS-DEV/business' },
+  { label: 'Health', to: '/DAILY-NEWS-DEV/health' },
+  { label: 'Science', to: '/DAILY-NEWS-DEV/science' },
+  { label: 'Sports', to: '/DAILY-NEWS-DEV/sports' },
+  { label: 'Technology', to: '/DAILY-NEWS-DEV/technology' },
+  { label: 'WWE', to: '/DAILY-NEWS-DEV/WWE' }
+];
 
-  <div className="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul className="navbar-nav mr-auto">
-      <li className="nav-item active">
-        <Link className="nav-link text-white" to="/DAILY-NEWS-DEV/">Home<span className="sr-only">(current)</span></Link>
-      </li>
-      <li className="nav-item">
-        <Link className="nav-link text-white" to="/DAILY-NEWS-DEV/business">Business</Link>
-      </li>
-      <li className="nav-item">
-        <Link className="nav-link text-white" to="/DAILY-NEWS-DEV/health">Health</Link>
-      </li>
-      <li className="nav-item">
-        <Link className="nav-link text-white" to="/DAILY-NEWS-DEV/science">Science</Link>
-      </li>
-      <li className="nav-item">
-        <Link className="nav-link text-white" to="/DAILY-NEWS-DEV/sports">Sports</Link>
-      </li>
-      <li className="nav-item">
-        <Link className="nav-link text-white" to="/DAILY-NEWS-DEV/technology">Technology</Link>
-      </li>
-    </ul>
-    <form className="form-inline my-2 my-lg-0">
-      <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
-      <button className="btn btn-success my-2 my-sm-0" type="submit">Go</button>
-    </form>
-  </div>
-</nav>
+const Navbar = () => (
+  <header className="site-header">
+    <div className="masthead">
+      <NavLink className="brand" to="/DAILY-NEWS-DEV/" aria-label="Daily Dispatch home">
+        <span className="brand-mark">D<span>.</span></span>
+        <span className="brand-copy">
+          <span className="brand-name">THE DAILY</span>
+          <span className="brand-edition">DISPATCH <span>·</span> INDEPENDENT BY DESIGN</span>
+        </span>
+      </NavLink>
+      <div className="masthead-note"><span className="live-dot" /> THE WORLD, IN FOCUS</div>
+    </div>
+    <nav className="section-nav" aria-label="News sections">
+      <div className="section-nav-inner">
+        {sections.map(({ label, to, end }) => (
+          <NavLink
+            key={label}
+            className={({ isActive }) => `section-link${isActive ? ' active' : ''}`}
+            to={to}
+            end={end}
+          >
+            {label}
+          </NavLink>
+        ))}
       </div>
-    )
-}
+    </nav>
+  </header>
+);
+
 export default Navbar;

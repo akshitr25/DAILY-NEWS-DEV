@@ -1,10 +1,8 @@
 import React from 'react'
-import loading from './loading.gif'
-const Spinner=()=>{ //function based component
-    return (
-      <div className="text-center bg-secondary">
-        <img src={loading} alt="loading"/>
-      </div>
-    )
-}
+const Spinner = () => (
+  <div className="news-loader" role="status" aria-label="Loading news">
+    <span className="loader-ring" />
+    <span>Gathering the latest stories</span>
+  </div>
+);
 export default Spinner;
