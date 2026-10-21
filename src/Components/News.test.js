@@ -7,10 +7,12 @@ describe('News', () => {
 
   beforeEach(() => {
     global.fetch = jest.fn();
+    process.env.REACT_APP_NEWS_API_URL = 'http://localhost:8787/api/news';
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    delete process.env.REACT_APP_NEWS_API_URL;
   });
 
   it('loads and renders GNews articles', async () => {

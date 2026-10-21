@@ -16,23 +16,29 @@ const News = (props) => {
     string.charAt(0).toUpperCase() + string.slice(1);
 
   const loadNews = useCallback(async (requestedPage, append = false) => {
-    const apiBaseUrl = process.env.REACT_APP_NEWS_API_URL || 'http://localhost:8787/api/news';
-    const url = new URL(apiBaseUrl);
-    url.searchParams.set('page', String(requestedPage));
-    url.searchParams.set('max', String(pageSize));
-    url.searchParams.set('q', query);
-    url.searchParams.set('lang', 'en');
-
-    if (query === 'wwe') {
-      url.searchParams.set('sortby', 'publishedAt');
-    } else {
-      url.searchParams.set('country', country);
-    }
+    const apiBaseUrl = process.env.REACT_APP_NEWS_API_URL
+      || (process.env.NODE_ENV === 'development' ? 'http://localhost:8787/api/news' : '');
     setProgress(0);
     setLoading(true);
     setError('');
 
     try {
+      if (!apiBaseUrl) {
+        throw new Error('News service is not configured for this deployment.');
+      }
+
+      const url = new URL(apiBaseUrl);
+      url.searchParams.set('page', String(requestedPage));
+      url.searchParams.set('max', String(pageSize));
+      url.searchParams.set('q', query);
+      url.searchParams.set('lang', 'en');
+
+      if (query === 'wwe') {
+        url.searchParams.set('sortby', 'publishedAt');
+      } else {
+        url.searchParams.set('country', country);
+      }
+
       const response = await fetch(url.toString());
       const data = await response.json();
 
