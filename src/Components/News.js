@@ -1,144 +1,144 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import NewsItem from './NewsItem'
 import Spinner from './Spinner';
 import PropTypes from 'prop-types';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-const News=(props)=>{
-  const [articles,setArticles]=useState([]);
-  const [loading,setLoading]=useState(true);
-  const [page,setPage]=useState(1);
-  const [totalResults,setTotalResults]=useState(0);
-  const capitalizeFirstLetter=(string)=>
-  {
-    return string.charAt(0).toUpperCase()+string.slice(1);
-  };
-  const updateNews=async ()=>{
-    props.setProgress(0);
-    setLoading(true);
-    let url;
-    if(props.query==='wwe')   
-      url=`https://gnews.io/api/v4/search?&page=${page}&apikey=${props.apiKey}&pageSize=${props.pageSize}&q=${props.query}&sortBy=publishedAt&lang=en`;
-    ///https://gnews.io/api/v4/search?q=wwe&apikey=1d2a950ce9de79cec9e981baadbb9b69
-    else
-      url=`https://gnews.io/api/v4/search?&page=${page}&apikey=${props.apiKey}&pageSize=${props.pageSize}&q=${props.query}&country=${props.country}&lang=en`;
-    let data=await fetch(url);
-    props.setProgress(50);
-    let parsedData=await data.json();
-    props.setProgress(60);
-    setArticles(parsedData.articles);
-    setTotalResults(parsedData.totalResults);
-    setLoading(false);
-    props.setProgress(100);
-  }
-  useEffect(()=>{
-    updateNews();
-  },[])
-  // const componentDidMount=async()=>{
-  //   console.log("update");
-  //   this.updateNews();
-  // }
-  const handlePrevClick=async()=>{
-  //   this.setState({page: this.state.page-1});
-  setPage(page-1);
-  this.updateNews();
-  }
-  const handleNextClick=async()=>{
-    setPage(page+1);
-    this.updateNews();
-  }
+const News = (props) => {
+  const { apiKey, country, pageSize, query, setProgress } = props;
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
+  const [error, setError] = useState('');
 
-  const fetchMoreData = async() =>{
-    // if(this.state.page+1>Math.ceil(this.state.totalResults/(props.pageSize)))
-    // {
-    //   this.setState({loading: false});
-    //   return false;
-    // }
-    props.setProgress(0);
-    let url;
-    if(props.query==='wwe')
-      url=`https://gnews.io/api/v4/search?&page=${page}&apikey=${props.apiKey}&pageSize=${props.pageSize}&q=${props.query}&sortBy=publishedAt&lang=en`;
-    else
-      url=`https://gnews.io/api/v4/search?&page=${page}&apikey=${props.apiKey}&pageSize=${props.pageSize}&q=${props.query}&country=${props.country}&lang=en`;
-    setPage(page+1);
+  const capitalizeFirstLetter = (string) =>
+    string.charAt(0).toUpperCase() + string.slice(1);
+
+  const loadNews = useCallback(async (requestedPage, append = false) => {
+    const url = new URL('https://gnews.io/api/v4/search');
+    url.searchParams.set('page', String(requestedPage));
+    url.searchParams.set('apikey', apiKey);
+    url.searchParams.set('max', String(pageSize));
+    url.searchParams.set('q', query);
+    url.searchParams.set('lang', 'en');
+
+    if (query === 'wwe') {
+      url.searchParams.set('sortby', 'publishedAt');
+    } else {
+      url.searchParams.set('country', country);
+    }
+
+    setProgress(0);
     setLoading(true);
-    console.log(page);
-    let data=await fetch(url);
-    props.setProgress(50);
-    let parsedData=await data.json();
-    console.log("more data");
-    setArticles(articles.concat(parsedData.articles));
-    setTotalResults(parsedData.totalResults);
-    setLoading(false);
-    props.setProgress(100);
-    console.log("articles: "+articles.length);
-  }
-  
-    return (
-      <div className="container my-4 bg-secondary">
-        <h1 className="text-center text-white" style={{margin: "25px 0px", marginTop: "55px"}}>Daily News - Top {capitalizeFirstLetter(props.query)} Headlines</h1>
-        {loading && <Spinner></Spinner>}
-        {!loading &&
-        <>
-        {/* <p className="text-white">Articles available: {totalResults}. </p> */}
-        {/* Page {this.state.page} out of {Math.ceil(this.state.totalResults/(props.pageSize))}.</p>
-        <p>{props.pageSize} Records per Page.</p> */}
-        {/* <div class="d-flex justify-content-between">
-          <button disabled={this.state.page<=1}
-          type="button" class="btn btn-secondary" onClick={this.handlePrevClick}>Prev &#8592;</button>
-          <button disabled={this.state.page+1>Math.ceil(this.state.totalResults/(props.pageSize))} type="button" class="btn btn-secondary" onClick={this.handleNextClick}>Next &#8594;</button>
-        </div> */}
+    setError('');
+
+    try {
+      const response = await fetch(url.toString());
+      const data = await response.json();
+
+      if (!response.ok || !Array.isArray(data.articles)) {
+        const apiError = Array.isArray(data.errors)
+          ? data.errors.join(', ')
+          : data.errors || data.message;
+        throw new Error(apiError || `News request failed (${response.status}).`);
+      }
+
+      setProgress(60);
+      setArticles((currentArticles) =>
+        append ? currentArticles.concat(data.articles) : data.articles
+      );
+      setTotalResults(Number(data.totalArticles) || 0);
+      setPage(requestedPage);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : 'Unable to load news.');
+    } finally {
+      setLoading(false);
+      setProgress(100);
+    }
+  }, [apiKey, country, pageSize, query, setProgress]);
+
+  useEffect(() => {
+    setArticles([]);
+    setPage(1);
+    setTotalResults(0);
+    loadNews(1);
+  }, [loadNews]);
+
+  const fetchMoreData = () => {
+    if (!loading && !error && articles.length < totalResults) {
+      loadNews(page + 1, true);
+    }
+  };
+  const retry = () => loadNews(articles.length > 0 ? page + 1 : 1, articles.length > 0);
+
+  return (
+    <div className="container my-4 bg-secondary">
+      <h1 className="text-center text-white" style={{ margin: "25px 0px", marginTop: "55px" }}>
+        Daily News - Top {capitalizeFirstLetter(props.query)} Headlines
+      </h1>
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          Unable to load news: {error}{' '}
+          <button className="btn btn-outline-danger btn-sm" onClick={retry} type="button">
+            Retry
+          </button>
+        </div>
+      )}
+      {loading && articles.length === 0 && <Spinner />}
+      {!loading && !error && articles.length === 0 && (
+        <p className="text-center text-white">No news articles were found.</p>
+      )}
+      {articles.length > 0 && (
         <InfiniteScroll
-          dataLength={articles.length} //This is important field to render the next data
+          dataLength={articles.length}
           next={fetchMoreData}
-          hasMore={articles!==totalResults}
-          loader={<Spinner/>}
+          hasMore={!error && articles.length < totalResults}
+          loader={loading ? <Spinner /> : null}
           endMessage={
-            <p style={{ textAlign: 'center' }}>
-              <b>You have seen all the articles. Stay tuned to Daily News for the latest updates.</b>
-            </p>
+            !error && (
+              <p style={{ textAlign: 'center' }}>
+                <b>You have seen all the articles. Stay tuned to Daily News for the latest updates.</b>
+              </p>
+            )
           }
         >
-        <div className="container">
-          <div className="row">
-          {articles.map((element)=>{
-            return (
+          <div className="container">
+            <div className="row">
+              {articles.map((element) => (
                 <div className="col-md-3 mx-4 my-4" key={element.url}>
                   <NewsItem
-                    title={element.title ? element.title : ""}
-                    desc={element.description ? element.description : ""}
+                    title={element.title || ""}
+                    desc={element.description || ""}
                     imgUrl={element.image}
                     newsUrl={element.url}
-                    // author={element.author}
                     date={element.publishedAt}
-                    source={element.source.name}
+                    source={element.source?.name || 'Unknown source'}
                   />
                 </div>
-            );
-          } ) }
+              ))}
+            </div>
           </div>
-        </div>
         </InfiniteScroll>
-        {/* <div class="d-flex justify-content-between">
-          <button disabled={this.state.page<=1}
-          type="button" class="btn btn-secondary" onClick={this.handlePrevClick}>Prev &#8592;</button>
-          <button disabled={this.state.page+1>Math.ceil(this.state.totalResults/(props.pageSize))} type="button" class="btn btn-secondary" onClick={this.handleNextClick}>Next &#8594;</button>
-        </div> */}
-      </>
-      }
-      </div>
-    );
+      )}
+    </div>
+  );
 };
-News.defaultProps={
+
+News.defaultProps = {
   country: "in",
   pageSize: 10,
   category: "general",
   query: "",
   apiKey: "1d2a950ce9de79cec9e981baadbb9b69"
 };
-News.propTypes={
+
+News.propTypes = {
   country: PropTypes.string,
-  page: PropTypes.number,
-  category: PropTypes.string
+  pageSize: PropTypes.number,
+  query: PropTypes.string,
+  apiKey: PropTypes.string,
+  setProgress: PropTypes.func.isRequired
 };
+
 export default News;

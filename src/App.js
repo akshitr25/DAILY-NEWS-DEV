@@ -1,22 +1,19 @@
 import React from 'react'
 import Navbar from './Components/Navbar';
 import News from './Components/News';
-import NewsItem from './Components/NewsItem';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoadingBar from 'react-top-loading-bar';
-import { useState } from 'react';
 const App=()=>{
-  const pageSize=9;
-  let [progress,setProgress]=useState(0);
+  const [progress,setProgress]=React.useState(0);
   return(
       <div className='bg-secondary'>
         <BrowserRouter>
         <Navbar/>
         <LoadingBar
         color='#f11946'
-        progress={100}
+        progress={progress}
         height={4}
-        onLoaderFinished={() => setProgress(progress)}
+        onLoaderFinished={() => setProgress(0)}
         />
           <Routes>
           <Route
