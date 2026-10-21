@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 const News = (props) => {
-  const { apiKey, country, pageSize, query, setProgress } = props;
+  const { country, pageSize, query, setProgress } = props;
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -16,9 +16,9 @@ const News = (props) => {
     string.charAt(0).toUpperCase() + string.slice(1);
 
   const loadNews = useCallback(async (requestedPage, append = false) => {
-    const url = new URL('https://gnews.io/api/v4/search');
+    const apiBaseUrl = process.env.REACT_APP_NEWS_API_URL || 'http://localhost:8787/api/news';
+    const url = new URL(apiBaseUrl);
     url.searchParams.set('page', String(requestedPage));
-    url.searchParams.set('apikey', apiKey);
     url.searchParams.set('max', String(pageSize));
     url.searchParams.set('q', query);
     url.searchParams.set('lang', 'en');
@@ -28,7 +28,6 @@ const News = (props) => {
     } else {
       url.searchParams.set('country', country);
     }
-
     setProgress(0);
     setLoading(true);
     setError('');
@@ -56,7 +55,7 @@ const News = (props) => {
       setLoading(false);
       setProgress(100);
     }
-  }, [apiKey, country, pageSize, query, setProgress]);
+  }, [country, pageSize, query, setProgress]);
 
   useEffect(() => {
     setArticles([]);
@@ -129,15 +128,13 @@ News.defaultProps = {
   country: "in",
   pageSize: 10,
   category: "general",
-  query: "",
-  apiKey: "1d2a950ce9de79cec9e981baadbb9b69"
+  query: ""
 };
 
 News.propTypes = {
   country: PropTypes.string,
   pageSize: PropTypes.number,
   query: PropTypes.string,
-  apiKey: PropTypes.string,
   setProgress: PropTypes.func.isRequired
 };
 

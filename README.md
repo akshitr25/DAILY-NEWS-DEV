@@ -1,73 +1,79 @@
-# Getting Started with Create React App
+# The Daily Dispatch
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React news app published on GitHub Pages. News requests go through a Cloudflare Worker so the GNews API key stays on the server and browser CORS restrictions do not block the site.
 
-## Available Scripts
+## Run locally
 
-In the project directory, you can run:
+1. Install Node.js LTS.
+2. In the project root, create `worker/.dev.vars` with your GNews API key:
 
-### `npm start`
+   ```text
+   GNEWS_API_KEY=your_gnews_api_key
+   ```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+3. Create `.env.development.local` in the project root:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+   ```text
+   REACT_APP_NEWS_API_URL=http://localhost:8787/api/news
+   ```
 
-### `npm test`
+4. In one terminal, start the Worker:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```powershell
+   npx wrangler@4 dev --config worker/wrangler.toml --port 8787
+   ```
 
-### `npm run build`
+5. In another terminal, start the website:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   ```powershell
+   npm start
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Open `http://localhost:3000`.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Deploy the news API
 
-### `npm run eject`
+You need a Cloudflare account and a GNews API key.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. From the project root, authenticate Wrangler:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   ```powershell
+   npx wrangler@4 login
+   ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+2. Store the GNews key as a Worker secret (Wrangler prompts for its value):
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+   ```powershell
+   npx wrangler@4 secret put GNEWS_API_KEY --config worker/wrangler.toml
+   ```
 
-## Learn More
+3. Deploy the Worker:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+   ```powershell
+   npx wrangler@4 deploy --config worker/wrangler.toml
+   ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+   Wrangler prints the Worker URL, similar to `https://daily-news-api.YOUR_SUBDOMAIN.workers.dev`.
 
-### Code Splitting
+4. Create `.env.production.local` in the project root and set the Worker URL:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+   ```text
+   REACT_APP_NEWS_API_URL=https://daily-news-api.YOUR_SUBDOMAIN.workers.dev/api/news
+   ```
 
-### Analyzing the Bundle Size
+5. Publish the website:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+   ```powershell
+   npm run deploy
+   ```
 
-### Making a Progressive Web App
+The `.env.*.local` files and `worker/.dev.vars` are ignored by Git. Never put the GNews key in a `REACT_APP_*` variable or commit it to the repository: browser build variables are public.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Rotate the previously exposed API key
 
-### Advanced Configuration
+The old GNews key was included in the public website source. Revoke or regenerate it in the GNews dashboard, then use the new key as the Worker secret above.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Other commands
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-
-#Description
-This app has been cloned from Daily-News app and the newsapi has been replaced with gnews io api in order to deploy on GIT.
+- `npm test -- --watchAll=false` runs tests.
+- `npm run build` creates the production site in `build/`.
